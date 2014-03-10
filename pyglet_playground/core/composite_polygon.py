@@ -4,7 +4,15 @@ __author__ = 'eatmuchpie'
 
 
 class CompositePolygon(Polygon):
+    """
+    A Polygon composed of multiple Polygons.
+    """
+
     def __init__(self, polygons={}, to_clone=None):
+        """
+        Create a new CompositePolygon with the given polygons, or as a clone of
+        the given CompositePolygon.
+        """
         super(CompositePolygon, self).__init__(to_clone)
         if to_clone is not None:
             self._polygons = dict((k, v.clone())

@@ -3,7 +3,6 @@ import numpy as np
 from core.composite_polygon import CompositePolygon
 from core.gl_polygon import GLPolygon
 
-from core.trianglestrip import TriangleStrip
 from core.utility import ObservableProperties, ObservableArray
 from cube import create_unit_cube
 
@@ -12,6 +11,10 @@ __author__ = 'eatmuchpie'
 
 @ObservableProperties('hole', 'lbox', 'rbox', 'tbox', 'bbox', 'scale_hole')
 class Aperture(CompositePolygon):
+    """
+    An aperture (a cuboid with a hole through it).
+    """
+
     def __init__(self, smoothness=400, to_clone=None):
         if to_clone is not None:
             super(Aperture, self).__init__(to_clone=to_clone)
@@ -120,8 +123,8 @@ class Aperture(CompositePolygon):
         back_face.orientation[1] = 180.
         back_face.position[2] = 1.
 
-        # Create cylinder between faces - starting by creating the circular vertices
-        # of the back face...
+        # Create cylinder between faces - starting by creating the circular
+        # vertices of the back face...
         back_circular_vertices = np.array(front_circle_vertices)
         back_circular_vertices[:, 2] += 1.
         back_circle_start_index = len(front_circle_vertices)

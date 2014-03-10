@@ -8,10 +8,22 @@ __author__ = 'eatmuchpie'
 
 @ObservableProperties('orientation', 'size', 'position')
 class Transformable(object):
+    """
+    An object that has three transformable properties - its orientation, size,
+    and position.
+
+    Those properties can be set to be automatically applied in the 3D space, or
+    that responsibility can be delegated to the subclass, as defined in
+    self.auto_transform.
+    """
     class BadTransformation(Exception):
         pass
 
     def __init__(self, to_clone=None):
+        """
+        Create a new Transformable object, optionally cloning the
+        transformations of the supplied Transformable object.
+        """
         if to_clone is not None:
             self.orientation = ObservableArray.like(to_clone.orientation)
             self.size = ObservableArray.like(to_clone.size)
@@ -39,6 +51,14 @@ class Transformable(object):
                     "Array needs shape of (3), not {0}".format(array.shape))
 
     def transform(self):
+        """
+        Perform the automated transformations (if desired).
+
+        This is done by pushing a cloned modelview matrix to the stack, then
+        applying the transformations to it. The matrix stays on the stack after
+        this function returns. It can be removed with the self.untransform()
+        method.
+        """
         glPushMatrix()
 
         if self.auto_transform['position']:
@@ -53,6 +73,11 @@ class Transformable(object):
             glScalef(*self.size)
 
     def untransform(self):
+        """
+        Undo the transformation applied in self.transform().
+
+        This pops the matrix from the modelview stack.
+        """
         glPopMatrix()
 
 

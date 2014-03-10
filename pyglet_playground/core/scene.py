@@ -77,8 +77,16 @@ class Scene(CompositePolygon):
 
 
 if __name__ == "__main__":
-    def slowly_rotate(obj, dt):
-        obj.orientation[:] += np.array([20, 50, 90]) * dt
+    def slowly_rotate(cls):
+        old_update = cls.update
+
+        def update(obj, dt):
+            if old_update is not None:
+                old_update(obj, dt)
+            obj.orientation[:] += np.array([20, 50, 90]) * dt
+
+        cls.update = update
+
 
     # cube = Cube()
     # cube.position[2] = -5.
@@ -87,12 +95,13 @@ if __name__ == "__main__":
     # torus.position[2] = -4.
 
     aperture = Aperture()
+    slowly_rotate(Aperture)
+
     aperture.position[2] = -10
     aperture.size[:] = [2., 2., 2.]
     aperture.hole.size[:2] = [1., 1.]
-    # aperture.lbox.size[0] = 0.2
-    aperture.on_update = slowly_rotate
-    # aperture.callback(aperture, 'no reason')
+    aperture.lbox.size[0] = 3.
+    aperture.tbox.size[1] = 2.5
 
     scene = Scene()
     scene._polygons = {'aperture': aperture}

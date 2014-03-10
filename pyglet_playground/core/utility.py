@@ -23,6 +23,26 @@ def vec(*args):
 
 
 class ObservableMethods(object):
+    """
+    A class decorator that allows the named methods to be observed.
+
+    After any of the named methods are called and return, self.callback() is
+    called which in turn calls all of the functions stored in self.callbacks.
+    Those functions are given two arguments - the observed object (i.e. self)
+    and the reason for the call (i.e. the name of the observed method that
+    was called).
+
+    If a batch of observed methods need to be called, it can be called using
+    the delayed_callback method as follows:
+
+    with obj.delayed_callback():
+        obj.observed_method1()
+        obj.observed_method2()
+        obj.observed_method3()
+
+    All calls to obj.callback() are subdued within the "with" block. On
+    exiting the "with" block, obj.callback() is called.
+    """
     def __init__(self, *observed_method_names):
         self.observed_method_names = observed_method_names
 
@@ -65,7 +85,6 @@ def _add_callback_to_class(cls):
             finally:
                 inner_self._is_calling_back = False
 
-
     @contextmanager
     def delayed_callback(inner_self, reason):
         """
@@ -87,9 +106,9 @@ def _add_callback_to_class(cls):
 
 class ObservableProperties(object):
     """
-    Add properties to the decorated class.
+    Add observed properties to the decorated class.
 
-    If the properties are replaced, the funtions in self.callbacks are called
+    If the properties are replaced, the functions in self.callbacks are called
     (by self.callback()). The functions are given two arguments: the changed
     object (self) and the name of the replaced property.
 
@@ -103,8 +122,16 @@ class ObservableProperties(object):
     self.callback(), you can run it inside a self.delayed_callback()
     with-block, after which self.callback() will be called, e.g.:
 
-    with self.delayed_callback():
-        code_block()
+    If a batch of observed properties need to be modified, it can be called
+    using the delayed_callback method as follows:
+
+    with obj.delayed_callback():
+        obj.observed_property1 = new_value1
+        obj.observed_property2 = new_value2
+        obj.observed_property3 = new_value3
+
+    All calls to obj.callback() are subdued within the "with" block. On
+    exiting the "with" block, obj.callback() is called.
     """
 
     def __init__(self, *observable_properties):
@@ -138,8 +165,14 @@ class ObservableProperties(object):
 
 @ObservableMethods('__setitem__', '__setslice__')
 class ObservableArray(np.ndarray):
+    """
+    An observable Numpy array. See ObservableMethods for details.
+    """
     @staticmethod
     def like(input_array):
+        """
+        Creates an ObservableArray copy of the given array.
+        """
         input_array = np.array(input_array)
         new_array = ObservableArray(np.array(input_array).shape)
         new_array[:] = input_array

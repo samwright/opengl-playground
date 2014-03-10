@@ -7,6 +7,9 @@ __author__ = 'eatmuchpie'
 
 
 class Polygon(Transformable):
+    """
+    A 2D surface in 3D space.
+    """
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, to_clone=None):
@@ -15,13 +18,24 @@ class Polygon(Transformable):
 
     @abc.abstractmethod
     def draw(self):
+        """
+        Draw the object to screen.
+        """
         pass
 
     @abc.abstractmethod
     def clone(self):
+        """
+        Clone this object.
+        """
         pass
 
     def update(self, dt):
-        if self.on_update is not None:
-            self.on_update(self, dt)
+        """
+        Called before this object is drawn, with the amount of time that has
+        passed since the last update.
+
+        :param dt: the time that has passed since the last update.
+        """
+        pass
 
